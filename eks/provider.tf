@@ -3,7 +3,6 @@ terraform {
 }
 
 provider "aws" {
-  profile = "example"
   region = var.aws_region
 }
 
