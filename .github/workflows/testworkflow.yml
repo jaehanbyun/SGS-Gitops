@@ -1,0 +1,46 @@
+name: Test on EKS Cluster
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkput@v3
+      
+      - name: Install and Set AWS CLI
+        run: |
+          curl --location "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID}}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.AWS_REGION }}
+
+      - name: Install kubectl
+        run: |
+          curl --location "https://storage.googleapis.com/kubernetes-release/release/$(curl --silent https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" -o "kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+      
+      - name: Install Terraform
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt-get update && sudo apt-get install terraform
+        
+      - name: Checkout EKS Terraform code
+        uses: actions/checkout@v2
+        with:
+          repository: jaehanbyun/SGS-Gitops
+          path: eks
+
+      - name: Initialize and apply Terraform
+        run: |
+          cd eks
+          terraform init
+          terraform apply -auto-approve
+      
