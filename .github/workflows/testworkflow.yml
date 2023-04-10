@@ -36,11 +36,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: jaehanbyun/SGS-Gitops
-          path: eks
+          path: SGS-Gitops
 
       - name: Initialize and apply Terraform
         run: |
-          cd eks
+          cd ./SGS-Gitops/eks
           terraform init
           terraform apply -auto-approve
       
