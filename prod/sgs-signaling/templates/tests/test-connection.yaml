@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "sgs-signaling.fullname" . }}-test-connection"
+  labels:
+    {{- include "sgs-signaling.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "sgs-signaling.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
