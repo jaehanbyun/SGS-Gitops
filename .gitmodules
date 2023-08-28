@@ -1,0 +1,3 @@
+[submodule "SGS-Secret"]
+	path = SGS-Secret
+	url = https://github.com/jaehanbyun/SGE-Secret.git
